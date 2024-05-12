@@ -7,7 +7,6 @@ To run the code:
 
 ```python main.py --data ohio540```
 
-For GlucoseHD.
 
 
 
