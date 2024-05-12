@@ -22,7 +22,7 @@ def main():
     parser.add_argument("--data_path", type=str, default="ohio540.csv", help="data file")  
 
     parser.add_argument(
-        "--target", type=str, default="CGM", help="target feature in S or MS task" #
+        "--target", type=str, default="CGM", help="target feature in S or MS task" 
     )
     parser.add_argument(
         "--freq",
@@ -52,7 +52,7 @@ def main():
     parser.add_argument(
         "--features",
         type=str,
-        default="S",  #M
+        default="S",  
         help="forecasting task, options:[M, S, MS]; M:multivariate predict multivariate, S:univariate predict univariate, MS:multivariate predict univariate",
     )
     # parser.add_argument('--inverse', action='store_true', help='inverse output data', default=False)
@@ -60,7 +60,7 @@ def main():
         "--cols",
         type=str,
         nargs="+", #allows multiple features to be input
-        default = "Time", #newly added
+        default = "Time", # newly added
         help="certain cols from the data files as the input features",
     )
 
@@ -76,7 +76,7 @@ def main():
         "--devices", type=str, default="0,1,2,3", help="device ids of multile gpus"
     )
     parser.add_argument(
-        "--method", type=str, default="AR-HDC", help="choose seq2seq-HDC or AR-HDC" #seq2seq-HDC
+        "--method", type=str, default="AR-HDC", help="choose seq2seq-HDC or AR-HDC"
     )
     parser.add_argument(
         "--learning_rate",

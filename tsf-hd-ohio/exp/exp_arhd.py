@@ -62,7 +62,6 @@ class ExpARHD(Exp_Basic):
             data_path=args.data_path,
             flag=flag,
             size=[args.seq_len, args.label_len, args.pred_len], 
-            #size = [96,24,24]
             features=args.features,
             target=args.target,
             inverse=False,

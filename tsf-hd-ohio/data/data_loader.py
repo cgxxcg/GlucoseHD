@@ -65,9 +65,7 @@ class Dataset_ohio(Dataset):
         full_path = os.path.join(self.root_path, self.data_path)
         df_raw = pd.read_csv(full_path)
 
-        # border1s = [0, 12*30*24*4 - self.seq_len, 12*30*24*4+4*30*24*4 - self.seq_len]
-        # border2s = [12*30*24*4, 12*30*24*4+4*30*24*4, 12*30*24*4+8*30*24*4]
-        border1s = [0, 4 * 30 * 24 - self.seq_len, 5 * 30 * 24 - self.seq_len] #3 borders: split to two chunks based on row (time)
+        border1s = [0, 4 * 30 * 24 - self.seq_len, 5 * 30 * 24 - self.seq_len] 
         border2s = [4 * 30 * 24, 5 * 30 * 24, 20 * 30 * 24]
         # print("border1s",border1s) #[0, 2784, 3504]
         # print("border2s", border2s) #[2880, 3600, 14400]
@@ -81,21 +79,18 @@ class Dataset_ohio(Dataset):
             #newly added: preprocess data
             df_data = missing_CGM.remove_nan_strat_end(df_data, 'CGM')
             df_data = df_data.fillna(0)
-            bgorg = copy.deepcopy(df_data['CGM'])
             #fill in CGM
             df_data['CGM'] = missing_CGM.filling_CGM(df_data)
             
             
         #ohio: (single variable-S)
         elif self.features == "S":
-            df_data = df_raw[[self.target]] #yes, select a single column (CGM)
+            df_data = df_raw[[self.target]] 
             #newly added: preprocess data
             df_data = missing_CGM.remove_nan_strat_end(df_data, 'CGM')
             df_data = df_data.fillna(0)
-            # bgorg = copy.deepcopy(df_data['CGM'])
-            
             #fill in CGM with 1
-            df_data['CGM'] = missing_CGM.filling_CGM(df_data) #type:Series
+            df_data['CGM'] = missing_CGM.filling_CGM(df_data)
             
 
         if self.scale:
@@ -103,23 +98,21 @@ class Dataset_ohio(Dataset):
             self.scaler.fit(train_data.values)
             data = self.scaler.transform(df_data.values)
         else:
-            data = df_data.values  #data = all CGM values
+            data = df_data.values  # data = all CGM values
         
         if self.timeenc == 2:
-            train_df_stamp = df_raw[["Time"]][border1s[0] : border2s[0]]  #[["date"]] 
-            train_df_stamp["Time"] = pd.to_datetime(train_df_stamp.Time, format="%d-%b-%Y %H:%M:%S") #pd.to_datetime(train_df_stamp.date)
+            train_df_stamp = df_raw[["Time"]][border1s[0] : border2s[0]]  
+            train_df_stamp["Time"] = pd.to_datetime(train_df_stamp.Time, format="%d-%b-%Y %H:%M:%S") 
             train_date_stamp = time_features(train_df_stamp, timeenc=self.timeenc, freq=self.freq)
             date_scaler = sklearn_StandardScaler().fit(train_date_stamp)
 
-            df_stamp = df_raw[["Time"]][border1:border2] #choose a segment from Time col
-            df_stamp["Time"] = pd.to_datetime(df_stamp.Time, format="%d-%b-%Y %H:%M:%S") #change it to datetime: pd.to_datetime(df_stamp.date)
+            df_stamp = df_raw[["Time"]][border1:border2] 
+            df_stamp["Time"] = pd.to_datetime(df_stamp.Time, format="%d-%b-%Y %H:%M:%S")
             data_stamp = time_features(df_stamp, timeenc=self.timeenc, freq=self.freq)
             data_stamp = date_scaler.transform(data_stamp)
         else:
             df_stamp = df_raw[["Time"]][border1:border2] #[0:2880]
-            # print("dfstamp before\n", df_stamp.tail(5))
-            df_stamp["Time"] = pd.to_datetime(df_stamp.Time, format="%d-%b-%Y %H:%M:%S") #pd.to_datetime(df_stamp.date)
-           # print("dfstamp todatetime\n", df_stamp.tail(5))
+            df_stamp["Time"] = pd.to_datetime(df_stamp.Time, format="%d-%b-%Y %H:%M:%S") 
             data_stamp = time_features(df_stamp, timeenc=self.timeenc, freq=self.freq)
             
 
@@ -207,9 +200,7 @@ class Dataset_ETT_hour(Dataset):
     def __read_data__(self):
         self.scaler = StandardScaler()
         df_raw = pd.read_csv(os.path.join(self.root_path, self.data_path))
-
-        # border1s = [0, 12*30*24 - self.seq_len, 12*30*24+4*30*24 - self.seq_len]
-        # border2s = [12*30*24, 12*30*24+4*30*24, 12*30*24+8*30*24]
+        
         border1s = [0, 4 * 30 * 24 - self.seq_len, 5 * 30 * 24 - self.seq_len]
         border2s = [4 * 30 * 24, 5 * 30 * 24, 20 * 30 * 24]
 
@@ -630,10 +621,8 @@ class Dataset_Pred(Dataset):
         return self.scaler.inverse_transform(data)
 
 
-#newly added 
+# Ohio: Newly added 
 class ohio(Dataset):
-    
-    
     def __init__(self, csv_file, seq_len, pred_len, scale=True):
         self.seq_len = seq_len
         self.pred_len = pred_len
