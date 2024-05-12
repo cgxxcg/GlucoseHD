@@ -16,7 +16,7 @@ def main():
     parser.add_argument(
         "--root_path",
         type=str,
-        default="./data/processedcsv/", 
+        default="../dataset/processedcsv/", 
         help="root path of the data file",
     )
     parser.add_argument("--data_path", type=str, default="ohio540.csv", help="data file")  
