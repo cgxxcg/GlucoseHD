@@ -27,7 +27,7 @@ def remove_nan_strat_end(df, attr):
 # fill in nan values with "1"
 # TODO: use average value to fill in missing CGMs 
 def filling_CGM(testpath):
-    filepath = "./data/processedcsv/ohio540.csv"
+    filepath = "../dataset/processedcsv/ohio540.csv"
     a_test = pd.read_csv(filepath, usecols=['CGM'])
     a_test = remove_nan_strat_end(a_test, 'CGM')  
     M, N = a_test.shape           # M = 16175, N =1 
