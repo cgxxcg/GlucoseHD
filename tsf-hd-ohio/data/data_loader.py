@@ -76,21 +76,19 @@ class Dataset_ohio(Dataset):
         if self.features == "M" or self.features == "MS":
             cols_data = df_raw.columns[1:]
             df_data = df_raw[cols_data]
-            #newly added: preprocess data
-            df_data = missing_CGM.remove_nan_strat_end(df_data, 'CGM')
-            df_data = df_data.fillna(0)
-            #fill in CGM
+
+            # Preprocess data: fill in CGM
             df_data['CGM'] = missing_CGM.filling_CGM(df_data)
             
             
         #ohio: (single variable-S)
         elif self.features == "S":
-            df_data = df_raw[[self.target]] 
-            #newly added: preprocess data
-            df_data = missing_CGM.remove_nan_strat_end(df_data, 'CGM')
-            df_data = df_data.fillna(0)
-            #fill in CGM with 1
+            df_data = df_raw[["Time", self.target]] 
+
+            # Preprocess data: fill in CGM
             df_data['CGM'] = missing_CGM.filling_CGM(df_data)
+            df_data = df_data['CGM'].to_frame()
+
             
 
         if self.scale:
@@ -99,6 +97,8 @@ class Dataset_ohio(Dataset):
             data = self.scaler.transform(df_data.values)
         else:
             data = df_data.values  # data = all CGM values
+            # data = df_data.iloc[:,1].values
+            # data = data.reshape(-1, 1)
         
         if self.timeenc == 2:
             train_df_stamp = df_raw[["Time"]][border1s[0] : border2s[0]]  
