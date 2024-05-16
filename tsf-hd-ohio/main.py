@@ -1,9 +1,8 @@
 import argparse
 import os
-
 import numpy as np
 import torch
-
+import matplotlib.pyplot as plt
 from exp import ExpARHD, ExpSeq2SeqHD
 
 
@@ -177,12 +176,11 @@ def main():
 
         exp = Exp(args)  # set experiments
         exp.train()
-
         m, rse_, corr_, p, t = exp.test()
+        
         metrics.append(m)
         preds.append(p)
         true.append(t)
-
         corr.append(corr_)
         rse.append(rse_)
         torch.cuda.empty_cache()
@@ -196,6 +194,53 @@ def main():
     np.save(folder_path + "trues.npy", np.array(true))
     np.save(folder_path + "corr.npy", np.array(corr))
     np.save(folder_path + "rse.npy", np.array(rse))
+
+
+
+
+    folder_path = "./results_{}/{}/".format(args.method, args.itr)
+    trues = np.load(folder_path + "trues.npy")
+    preds = np.load(folder_path + "preds.npy")
+    # Find 12 continuous values in trues that are not 1
+    start_idx = None
+    for i in range(trues.shape[1] - 11):  # iterate through the second dimension
+        if all(trues[0, i:i+12, 0] != 150):  # check if 12 continuous values are not equal to 100 (Fill in NaN value)
+            start_idx = i
+            break
+
+    if start_idx is not None:
+        # Extract the segment of trues and corresponding predictions
+        trues_segment = trues[0, start_idx+20:start_idx+32, 0]
+        preds_segment = preds[0, start_idx+20:start_idx+32, 0]
+
+        # Plotting
+        plt.figure(figsize=(10, 6))
+        plt.title("CGM Prediction Results")
+        plt.xlabel("Time (minutes)")
+        plt.ylabel("CGM Value")
+
+        # Plot trues and predictions
+        x_axis = range(0, 12*5, 5)  # Adjust x-axis to reflect 5-minute intervals
+        plt.plot(x_axis, trues_segment, label="True", linestyle='-', color='blue')
+        plt.plot(x_axis, preds_segment, label="Predicted", linestyle='--', color='red')
+        
+        # Add data point labels
+        for x, y_true, y_pred in zip(x_axis, trues_segment, preds_segment):
+            plt.text(x, y_true, str(round(y_true, 2)), fontsize=8, ha='center', va='bottom', color='blue')
+            plt.text(x, y_pred, str(round(y_pred, 2)), fontsize=8, ha='center', va='bottom', color='red')
+
+        plt.legend()
+        plt.grid(True)
+        plt.tight_layout()
+        plt.show()
+    else:
+        print("Could not find 12 continuous values in trues that are not 1.")
+
+
+
+
+
+
 
 
 if __name__ == "__main__":
