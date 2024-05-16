@@ -87,6 +87,7 @@ class ExpARHD(Exp_Basic):
 
     def test(self):
         test_data: np.ndarray = self._get_data(flag="test").data_x
+        
         preds = []
         trues = []
         rses, corrs = [], []
@@ -113,6 +114,7 @@ class ExpARHD(Exp_Basic):
 
         # mae, mse, rmse, mape, mspe = metric(preds, trues)
         print(f"rse:{rse}, corr:{corr}")
+        
         return [rse, corr], RSE, CORR, preds, trues
 
 
@@ -149,9 +151,12 @@ class ExpARHD(Exp_Basic):
             x_seq = torch.Tensor(data[idx - self.args.seq_len : idx, :]).to(self.device)
             # Prediction
             Y_true = torch.zeros((self.args.pred_len, data.shape[1]))
+            
             Y_pred = torch.zeros((self.args.pred_len, data.shape[1]))
+            
             for j in range(self.args.pred_len):
                 y = torch.Tensor(data[idx + j, :]).to(self.device)
+                
                 y_tilda = self.model(x_seq).T
                 x_seq = torch.cat((x_seq, y_tilda.detach()))[1:, :]
                 Y_true[j] = y.detach()
